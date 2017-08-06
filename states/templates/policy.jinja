@@ -1,0 +1,24 @@
+{% set router_vendor = grains.vendor -%}{# get the vendor grains #}
+{% if router_vendor|lower == 'juniper' %}
+replace:
+policy-options {
+    prefix-list MGMT {
+      10.1.0.1/32;
+      10.1.0.2/32;
+      10.1.6.3/32;
+      10.1.6.4/32;
+      10.1.12.5/31;
+      10.1.12.6/31;
+    }
+    prefix-list CLIENT-MGMT;
+    prefix-list MGMTv6 {
+     fd01:1:0:1::/64;
+     fd01:3:0:3::/64;
+    }
+    prefix-list OUTRO-MGMTv6 {
+      fd01:5:5000::/40;
+    }
+}
+{% elif router_vendor|lower in ['cisco'] %}
+
+{% endif %}

@@ -1,0 +1,21 @@
+{% set router_vendor = grains.vendor %}
+{% set nome = pillar.snmp_test.snmp_name %}
+{% set comm_name = pillar.snmp_test.community %}
+
+{% if router_vendor|lower == 'juniper' %}
+
+snmp {
+    name {{ nome }} ;
+    view ALL {
+        oid .1 include;
+    }
+    community {{ comm_name }} {
+        view ALL;
+        authorization read-only;
+        clients {
+            10.1.1.254/32;
+            0.0.0.0/0 restrict;
+        }
+    }
+}
+{% endif %}

@@ -1,0 +1,24 @@
+{% set peers = pillar.get('ntp.peers', []) %}
+{% set servers = pillar.get('ntp.servers', []) %}
+
+{%- if grains.vendor|lower == 'cisco' %}
+  no ntp
+  {%- for server in servers %}
+  ntp server {{ server }}
+  {%- endfor %}
+  {%- for peer in peers %}
+  ntp peer {{ peer }}
+  {%- endfor %}
+{%- elif grains.os|lower == 'junos' %}
+  system {
+    replace:
+    ntp {
+      {%- for server in servers %}
+      server {{ server }};
+      {%- endfor %}
+      {%- for peer in peers %}
+      peer {{ peer }};
+      {%- endfor %}
+    }
+  }
+{%- endif %}

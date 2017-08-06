@@ -1,0 +1,25 @@
+{% set router_vendor = grains.vendor -%}{# get the vendor grains #}
+{%- set route_output = salt.route.show('0.0.0.0/0', 'static') -%}
+{%- set default_route = route_output['out'] -%}
+
+{% if not default_route or "qualified-next-hop" not in route_output %}
+  {% if router_vendor|lower == 'juniper' %}
+routing-options {
+    static {
+    	route {{ default_route }} {
+    		qualified-next-hop {{pillar.default_route_nh}} {
+                preference 5;
+                bfd-liveness-detection {
+                    minimum-interval 300;
+                    multiplier 3;
+                    no-adaptation;
+                }
+            }
+        }
+    }
+}
+  {% elif router_vendor|lower in ['cisco', 'arista'] %}
+{# não tem napalm route para cisco #}
+  {% endif %}
+
+{% endif %}
