@@ -3,6 +3,7 @@ Experimento com salt + NAPALM em equipamentos de rede.
 
 ## Instalação
 **Salt**
+
 Ubuntu:
 - `apt install salt-master`
 - `apt install salt-minion`
@@ -11,12 +12,14 @@ Alternativo:
 - [Saltstack bootstrap script](https://github.com/saltstack/salt-bootstrap)
 
 **NAPALM**
+
 Dependências:
 - `apt install libffi-dev libssl-dev python-dev python-cffi libxslt1-dev python-pip`
 - `pip install --upgrade cffi`
 
 Bibliotecas:
 - `pip install napalm-junos napalm-iosxr napalm-ios napalm-ros`
+ 
  ou
 - `pip install napalm` _(todas)_
 
@@ -25,7 +28,8 @@ Máquinas virtuais (Virtualbox) e imagens de roteadores no GNS3
 - JunOSOlive (Juniper)
 - IOS (Cisco)
 - RouterOS (Mikrotik)
-![Config no GNS3](https://imgur.com/a/RW5Wl)
+
+![Imgur](https://imgur.com/a/RW5Wl.png)
 
 ## Configuração inicial
 Arquivos [`/etc/salt/master`](master) e [`/etc/salt/proxy`](proxy).
@@ -33,9 +37,11 @@ Arquivos [`/etc/salt/master`](master) e [`/etc/salt/proxy`](proxy).
 Para as configurações simples e uso básico, somente *file_roots* (caso não deseje local padrão) e *interface* são necessários no master, e *master* no proxy.
 
 **Arquivos SLS: YAML do pillar e top**
+
 Criar arquivos top e pillars em `/srv/pillar` (local padrão no master).
 
 - `/srv/pillar/top.sls`
+
 Arquivo top associa os nomes dos minions proxy com os arquivos pillars.
 ```yaml
 base:
@@ -50,6 +56,7 @@ base:
 ```
 
 - `/srv/pillar/junos1.sls`
+
 Arquivo pillar contém as configurações para conexão com o proxy e eventuais dados estáticos.
 ```yaml
 proxy:
@@ -66,9 +73,9 @@ O salt utiliza chaves públicas para autenticação. Os minions enviam para o ma
 - Iniciar salt-master:
   + `systemctl start salt-master`
 - Iniciar salt-proxy:
-  + `salt-proxy --proxyid=junos1 -l debug` (mostrar log)
-  + `salt-proxy --proxyid=junos1 -d` (daemon)
-  + `systemctl start salt-proxy@junos1` [(service)](test/salt-proxy@.service)
+  + (log) `salt-proxy --proxyid=junos1 -l debug`
+  + (daemon) `salt-proxy --proxyid=junos1 -d`
+  + [(service)](test/salt-proxy@.service) `systemctl start salt-proxy@junos1`
 - Aceitar chave associada ao minion (proxy):
   + `salt-key -a -y junos1`
 
