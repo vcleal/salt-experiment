@@ -29,7 +29,7 @@ Máquinas virtuais (Virtualbox) e imagens de roteadores no GNS3
 - IOS (Cisco)
 - RouterOS (Mikrotik)
 
-![Imgur](https://i.imgur.com/dyXwfjk.png?1)
+![Imgur](https://i.imgur.com/dyXwfjk.png?1 =600px)
 
 ## Configuração inicial
 Arquivos [`/etc/salt/master`](master) e [`/etc/salt/proxy`](proxy).
@@ -374,3 +374,7 @@ uptime = '0'
 ```
 
 ## Referências
+- [SaltStack Github](https://github.com/saltstack)
+- [SaltStack Documentation](https://docs.saltstack.com/en/latest/)
+- [Napalm](https://github.com/napalm-automation/napalm-salt)
+- [Mircea Ulinic](https://mirceaulinic.net/)
