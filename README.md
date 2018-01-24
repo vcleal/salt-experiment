@@ -29,7 +29,7 @@ Máquinas virtuais (Virtualbox) e imagens de roteadores no GNS3
 - IOS (Cisco)
 - RouterOS (Mikrotik)
 
-[Imgur](https://i.imgur.com/dyXwfjk.png?1)
+![Imgur](https://i.imgur.com/dyXwfjk.png?1)
 
 ## Configuração inicial
 Arquivos [`/etc/salt/master`](master) e [`/etc/salt/proxy`](proxy).
