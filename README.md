@@ -31,6 +31,8 @@ Máquinas virtuais (Virtualbox) e imagens de roteadores no GNS3
 
 ![Imgur](https://i.imgur.com/dyXwfjk.png?2)
 
+O ambiente de teste virtual foi definido conectado numa rede *host-only* representada pelo master, e a rota na máquina local para as outras redes virtuais deve ser adicionada.
+
 ## Configuração inicial
 Arquivos [`/etc/salt/master`](master) e [`/etc/salt/proxy`](proxy).
 
@@ -86,8 +88,35 @@ Outros comandos
   + `salt-key -L`
 
 ## Enviando comandos
-WIP
+Com o master e o minion conectados é possível enviar comandos do salt via CLI. Os comandos tem três componentes principais que podem ser vistos na sintaxe abaixo:
+
+```bash
+salt '<target>' <function> [arguments]
+salt '*' test.rand_sleep 120 # exemplo
+```
+
+Onde:
+
+- `target` - permite selecionar/filtrar os minions que as funções serão executadas *(mais informações sobre as maneiras de selecionar abaixo)*
+- `function` - funcionalidade provida por um módulo, geralmente especificada como `module.function`, podendo fazer uso dos módulos já existentes do NAPALM (net, ntp, bgp, etc...) e do próprio salt, além de criar seus próprios
+- `arguments` - argumentos para a função especificada
+
 ###### Selecionando alvo (targeting)
+Dentre as várias maneiras de selecionar o minion alvo, destaca-se algumas abaixo espeficicadas através de opções do comando salt:
+
+- Padrão (glob para os ids dos minions)
+  + `salt '*' test.ping` *(todos)*
+  + `salt 'mikro1' test.ping`
+- Grains
+  + `salt -G 'os:ios' test.ping`
+- Expressão regular
+  + `salt -E 'junos[1-9]' test.ping`
+- Lista
+  + `salt -L 'mikro1,cisco1' test.ping`
+- Nodegroup (grupo criado no arquivo de configuração do master)
+  + `salt -N gns3 test.ping`
+- Combinação
+  + `salt -C 'G@os:ios and junos* or N@gns3' test.ping`
 
 ## Alteração de configurações
 A alteração de configurações de uma maneira genérica nos equipamentos utiliza o módulo NAPALM network, através dos métodos `net.load_config` e `net.load_template`. Utilizando estes métodos pode-se enviar as configurações desejadas de diferentes maneiras listadas abaixo.
@@ -363,6 +392,7 @@ run_ntp_state:
 Os eventos no salt podem ser monitorados através do comando `salt-run state.event pretty=True`.
 
 ## Salt Mine
+WIP
 
 ## Extras
 Mudança do arquivo `napalm_junos/junos.py` na função get_facts() com amostra mostrada abaixo com acréscimo de teste da entrada do dicionário para problema encontrado na RE0 e uptime da máquina virtual JunosOlive.
@@ -372,6 +402,40 @@ uptime = '0'
             if output['RE0'] is not None: # Fix for RE0: None
                 uptime = output['RE0']['up_time']
 ```
+
+###### Outras dificuldades encontradas
+- Mikrotik
+  + Erro de conexão sem senha configurada no roteador
+  + Biblioteca NAPALM limitada, não suporta todas as funções (ex. alteração de configuração)
+- Juniper
+  + Habilitar SSH para conexão com salt
+  + Alteração na biblioteca como mostrado acima
+- Cisco
+  + Habilitar SSH e senha de enable para conexão com salt
+  + Necessidade de privilégio do username na conexão
+  + `optional_args: secret` no pillar com senha de enable
+  + Inclusão do disk0 na imagem no gns3
+  + Configuração line vty (conexão e timeout)
+
+###### Lista de outros comandos úteis
+- `salt saltutil.refresh_pillar`
+  + Atualiza informações do pillar (reload do arquivo sls)
+- `salt pillar.items`
+  + Lista conteúdo do pillar
+- `salt pillar.get`
+  + Obtem algum elemento do pillar
+- `salt grains.ls`
+  + Lista grains
+- `salt grains.items`
+  + Lista dados dos grains
+- `salt net.config_changed`
+  + Verifica se configuração foi alterada
+- `salt net.compare_config`
+  + Compara configuração antes do commit
+- `salt net.config_control`
+  + Realiza commit (ou rollback caso algum erro)
+- `salt net.rollback`
+  + Desfaz última alteração
 
 ## Referências
 - [SaltStack Github](https://github.com/saltstack)
